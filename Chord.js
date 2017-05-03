@@ -161,8 +161,8 @@ function createChord(labels, matrix, rows, extra) {
         .style("fill", function (d, i) { return fill(i % 10); }) /* Define the fill color by the index of the group object */
         .style("stroke", function (d, i) { return fill(i % 10); }) /* Define the border color */
         .attr("d", d3.svg.arc().innerRadius(innerRadius).outerRadius(innerRadius + thickness)) /* Define and draw the path as an arc */
-        .on("mouseover", fade(0, chords)) /*Mousover fade events*/ // Set opacity to be 0.
-        .on("mouseout", fade(1, chords));
+        .on("mouseover", fade(0, chords, groups)) /*Mousover fade events*/ // Set opacity to be 0. // Change handle to be "click"
+        .on("mouseout", fade(1, chords, groups));
 
     groups.append("title")
         .text(function (d, i) {
@@ -259,13 +259,18 @@ function graphSupergroups(rows, labels, innerRadius, thickness, layout, appendAr
 }
 
 /* Returns an event handler for fading a given chord group */
-function fade(opacity, chords) {
+function fade(opacity, chords, groups) {
+    var careerIndex = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
     return function (g, i) {
         chords.filter(function (d) {return d.source.index !== i && d.target.index !== i; })
             .transition()
             .style("opacity", opacity);
-        d3.selectAll("text").filter(function (d) {return d.index !== i; }) // fade out the names of non-selected arcs
+        d3.selectAll("text").filter(function (d) {return d.index !== i && !careerIndex.includes(d.index); })
+            .transition() // fade out the names of non-selected arcs
             .style("opacity", opacity);
+        groups.filter(function (d) {return d.index !== i && !careerIndex.includes(d.index); })
+            .transition()
+            .style("opacity",opacity);
     };
 }
 
