@@ -175,6 +175,7 @@ function createChord(labels, matrix, rows, extra) {
         .text(function (d, i) {return labels[layers - 1][i + layers]; })
         .attr("transform", function (d) { return moveText(innerRadius + thickness, (d.startAngle + d.endAngle) / 2, this.getBBox().width); });
 
+
     if (layers > 1) {
         graphSupergroups(rows, labels[0], innerRadius, thickness, layout, appendArcs, fill, names, chords);
     }
@@ -247,10 +248,10 @@ function graphSupergroups(rows, labels, innerRadius, thickness, layout, appendAr
             opacity[1] = 1;
             opacity[2] = 1;
         }
-        names.filter(function (d, i) { return sIndex <= i && i <= eIndex; })
+        names.filter(function (d, i) { return sIndex <= i && i <= eIndex; }) // set opacity for the labels of inner arc
             .transition()
             .style("opacity", opacity[0]);
-        arc.transition()
+        arc.transition() // set the opacity for outer arc
             .attr("d", d3.svg.arc())
             .style("opacity", opacity[1]);
         d3.select(supergroups[0][i]).select("text").transition().style("opacity", opacity[2]);
@@ -263,9 +264,10 @@ function fade(opacity, chords) {
         chords.filter(function (d) {return d.source.index !== i && d.target.index !== i; })
             .transition()
             .style("opacity", opacity);
+        d3.selectAll("text").filter(function (d) {return d.index !== i; }) // fade out the names of non-selected arcs
+            .style("opacity", opacity);
     };
 }
-
 
 /* Returns an event handler for fading a given chord group */
 function superFade(opacity, chords, superData) {
