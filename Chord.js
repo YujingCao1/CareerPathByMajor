@@ -104,11 +104,11 @@ function createChord(labels, matrix, rows, extra) {
         .matrix(matrix); /*Sets the input data matrix for this chord diagram*/
 
     /*Defines the colors used in the chord diagram*/
-    fill = d3.scale.ordinal()
-        .domain(d3.range(10))
-        .range(["#443333", "#668866", "#FFAA00", "#EECC33", "#33EEFF", "#64A52F", "#11B0EA", "#F76732", "#F7F338", "#7FFFD4"]);
+    // fill = d3.scale.ordinal()
+    //     .domain(d3.range(labels[1].length))
+    //     .range(["#443333", "#668866", "#FFAA00", "#EECC33", "#33EEFF", "#64A52F", "#11B0EA", "#F76732", "#F7F338", "#7FFFD4"]);
 
-   // fill = ["rgb(0,0,0)","rgb(255,0,0)","rgb(255,69,0)","rgb(128,0,32)","rgb(255,192,203)","rgb(138,43,226)","rgb(0,0,255)","rgb(64,224,208)","rgb(0,128,128)","rgb(0,128,0)","rgb(128,128,0)","rgb(255,255,0)","rgb(204,119,34)","rgb(65,105,225)","rgb(222,49,99)","rgb(97,51,47)","rgb(0,255,0)","rgb(128,128,128)","rgb(62,180,137)"]
+    fill = ["rgb(0,0,0)","rgb(255,0,0)","rgb(128,0,32)","rgb(64,224,208)","rgb(65,105,225)","rgb(0,0,255)","rgb(255,69,0)","rgb(255,192,203)","rgb(138,43,226)","rgb(0,128,128)","rgb(0,128,0)","rgb(128,128,0)","rgb(255,255,0)","rgb(204,119,34)","rgb(222,49,99)","rgb(97,51,47)","rgb(0,255,0)","rgb(128,128,128)","rgb(62,180,137)","rgb(0,0,0)","rgb(255,0,0)","rgb(255,69,0)","rgb(128,0,32)","rgb(255,192,203)","rgb(138,43,226)","rgb(0,0,255)","rgb(64,224,208)","rgb(0,128,128)","rgb(0,128,0)","rgb(128,128,0)","rgb(255,255,0)","rgb(204,119,34)","rgb(65,105,225)","rgb(222,49,99)","rgb(97,51,47)"]
     
     /*Append SVG element*/
     svg = d3.select("body").append("svg")
@@ -129,8 +129,8 @@ function createChord(labels, matrix, rows, extra) {
         .data(layout.chords)
         .enter().append("path")
         .attr("class", "chord")
-        .style("fill", function (d) { return fill(d.target.index % 10); })
-        .style("stroke", function(d){return fill(d.target.index % 10); })
+        .style("fill", function (d) { return fill[d.target.index]; })
+        .style("stroke", function(d){return fill[d.target.index ]; })
         .attr("d", d3.svg.chord().radius(innerRadius));
 
     chords.append("title")
@@ -158,11 +158,11 @@ function createChord(labels, matrix, rows, extra) {
     /* Draw the annulus */
 
     groups.append("path") /* For each group, append a path */
-        .style("fill", function (d, i) { return fill(i % 10); }) /* Define the fill color by the index of the group object */
-        .style("stroke", function (d, i) { return fill(i % 10); }) /* Define the border color */
+        .style("fill", function (d, i) { return fill[i]; }) /* Define the fill color by the index of the group object */
+        .style("stroke", function (d, i) { return fill[i]; }) /* Define the border color */
         .attr("d", d3.svg.arc().innerRadius(innerRadius).outerRadius(innerRadius + thickness)) /* Define and draw the path as an arc */
-        .on("mouseover", fade(0, chords, groups)) /*Mousover fade events*/ // Set opacity to be 0. // Change handle to be "click"
-        .on("mouseout", fade(1, chords, groups));
+        .on("click", fade(0, chords, groups)) /*Mousover fade events*/ // Set opacity to be 0. // Change handle to be "click"
+        //.on("click", fade(1, chords, groups));
 
     groups.append("title")
         .text(function (d, i) {
@@ -215,11 +215,11 @@ function graphSupergroups(rows, labels, innerRadius, thickness, layout, appendAr
         .enter().append("g");
 
     supergroups.append("path")
-        .style("fill", function (d) { return fill(d.index % 10); })
-        .style("stroke", function (d) { return fill(d.index % 10); })
+        .style("fill", function (d) { return fill[d.index]; })
+        .style("stroke", function (d) { return fill[d.index]; })
         .attr("d", d3.svg.arc())
         .on("click", expand)
-        .on("mouseover", superFade(0, chords, superData)) // Set opacity to be 0
+        .on("mouseover", superFade(0.2, chords, superData)) // Set opacity to be 0
         .on("mouseout", superFade(1, chords, superData));
 
     supergroups.append("text")
@@ -238,7 +238,7 @@ function graphSupergroups(rows, labels, innerRadius, thickness, layout, appendAr
             superData[i].innerRadius += 100;
             superData[i].outerRadius += 100;
             opacity[0] = 1;
-            opacity[1] = 0; // Opacity is set to be 0, outer circle will disappear once click it
+            opacity[1] = 0.2; // Opacity is set to be 0, outer circle will disappear once click it
             opacity[2] = 0;
         }
         else {
