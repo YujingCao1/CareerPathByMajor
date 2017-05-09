@@ -108,7 +108,7 @@ function createChord(labels, matrix, rows, extra) {
     //     .domain(d3.range(labels[1].length))
     //     .range(["#443333", "#668866", "#FFAA00", "#EECC33", "#33EEFF", "#64A52F", "#11B0EA", "#F76732", "#F7F338", "#7FFFD4"]);
 
-    fill = ["rgb(0,0,0)","rgb(255,0,0)","rgb(128,0,32)","rgb(64,224,208)","rgb(65,105,225)","rgb(0,0,255)","rgb(255,69,0)","rgb(255,192,203)","rgb(138,43,226)","rgb(0,128,128)","rgb(0,128,0)","rgb(128,128,0)","rgb(255,255,0)","rgb(204,119,34)","rgb(222,49,99)","rgb(97,51,47)","rgb(0,255,0)","rgb(128,128,128)","rgb(62,180,137)","rgb(0,0,0)","rgb(255,0,0)","rgb(255,69,0)","rgb(128,0,32)","rgb(255,192,203)","rgb(138,43,226)","rgb(0,0,255)","rgb(64,224,208)","rgb(0,128,128)","rgb(0,128,0)","rgb(128,128,0)","rgb(255,255,0)","rgb(204,119,34)","rgb(65,105,225)","rgb(222,49,99)","rgb(97,51,47)"]
+    fill = ["rgb(0,0,0)","rgb(255,0,0)","rgb(128,0,32)","rgb(64,224,208)","rgb(65,105,225)","rgb(0,0,255)","rgb(255,69,0)","rgb(0,0,128)","rgb(138,43,226)","rgb(0,128,128)","rgb(0,128,0)","rgb(107,142,35)","rgb(247,223,7)","rgb(204,119,34)","rgb(222,49,99)","rgb(97,51,47)","rgb(158,253,56)","rgb(128,128,128)","rgb(247,223,7)","rgb(0,0,0)","rgb(255,0,0)","rgb(255,69,0)","rgb(128,0,32)","rgb(0,0,128)","rgb(138,43,226)","rgb(0,0,255)","rgb(64,224,208)","rgb(0,128,128)","rgb(204,119,34)","rgb(107, 142, 35)","rgb(62,180,137)","rgb(0,128,0)","rgb(65,105,225)","rgb(222,49,99)","rgb(97,51,47)"]
     
     /*Append SVG element*/
     svg = d3.select("body").append("svg")
@@ -161,8 +161,8 @@ function createChord(labels, matrix, rows, extra) {
         .style("fill", function (d, i) { return fill[i]; }) /* Define the fill color by the index of the group object */
         .style("stroke", function (d, i) { return fill[i]; }) /* Define the border color */
         .attr("d", d3.svg.arc().innerRadius(innerRadius).outerRadius(innerRadius + thickness)) /* Define and draw the path as an arc */
-        .on("click", fade(0, chords, groups)) /*Mousover fade events*/ // Set opacity to be 0. // Change handle to be "click"
-        //.on("click", fade(1, chords, groups));
+        .on("click", fade(0.1, chords, groups)) /*Mousover fade events*/ // Set opacity to be 0. // Change handle to be "click"
+        //.on("mouseout", fade(1, chords, groups));
 
     groups.append("title")
         .text(function (d, i) {
@@ -219,7 +219,7 @@ function graphSupergroups(rows, labels, innerRadius, thickness, layout, appendAr
         .style("stroke", function (d) { return fill[d.index]; })
         .attr("d", d3.svg.arc())
         .on("click", expand)
-        .on("mouseover", superFade(0.2, chords, superData)) // Set opacity to be 0
+        .on("mouseover", superFade(0, chords, superData)) // Set opacity to be 0
         .on("mouseout", superFade(1, chords, superData));
 
     supergroups.append("text")
@@ -259,18 +259,35 @@ function graphSupergroups(rows, labels, innerRadius, thickness, layout, appendAr
 }
 
 /* Returns an event handler for fading a given chord group */
+    var clicking = 0;
 function fade(opacity, chords, groups) {
     var careerIndex = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
     return function (g, i) {
-        chords.filter(function (d) {return d.source.index !== i && d.target.index !== i; })
-            .transition()
-            .style("opacity", opacity);
-        d3.selectAll("text").filter(function (d) {return d.index !== i && !careerIndex.includes(d.index); })
-            .transition() // fade out the names of non-selected arcs
-            .style("opacity", opacity);
-        groups.filter(function (d) {return d.index !== i && !careerIndex.includes(d.index); })
-            .transition()
-            .style("opacity",opacity);
+        if (clicking == 0){
+            chords.filter(function (d) {return d.source.index !== i && d.target.index !== i; })
+                .transition()
+                .style("opacity", opacity);
+            // d3.selectAll("text").filter(function (d) {return d.index !== i && !careerIndex.includes(d.index); })
+            //     .transition() // fade out the names of non-selected arcs
+            //     .style("opacity", opacity);
+            // groups.filter(function (d) {return d.index !== i && !careerIndex.includes(d.index); })
+            //     .transition()
+            //     .style("opacity",0.1);
+
+            clicking = 1;
+        }else{
+            chords.filter(function (d) {return d.source.index !== i && d.target.index !== i; })
+                .transition()
+                .style("opacity", 1);
+            // d3.selectAll("text").filter(function (d) {return d.index !== i && !careerIndex.includes(d.index); })
+            //     .transition() // fade out the names of non-selected arcs
+            //     .style("opacity", 1);
+            // groups.filter(function (d) {return d.index !== i && !careerIndex.includes(d.index); })
+            //     .transition()
+            //     .style("opacity",1);
+
+            clicking = 0;
+        }
     };
 }
 
